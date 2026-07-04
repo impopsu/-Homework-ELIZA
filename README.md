@@ -1,4 +1,7 @@
-# ELIZA Chatbot (Homework)
+# ELIZA (Homework)
+
+**ชื่อ:** ปิยดารตน์ สุพินิจ
+**รหัสนิสิต:** 6730301031
 
 โปรแกรมจำลอง ELIZA แชทบอทที่เลียนแบบนักจิตบำบัดแนว Rogerian
 (แนวคิดต้นฉบับโดย Joseph Weizenbaum, 1966) โดยใช้ **regular expression
