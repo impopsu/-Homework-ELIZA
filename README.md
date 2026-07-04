@@ -1,53 +1,61 @@
 # ELIZA Chatbot (Homework)
 
-โปรแกรมจำลอง ELIZA แชทบอทยุคแรกที่เลียนแบบนักจิตบำบัดแนว Rogerian
-(Joseph Weizenbaum, 1966) โดยใช้ **regular expression (regex)** จับรูปแบบ
-ประโยคที่ผู้ใช้พิมพ์เข้ามา แล้วสร้างคำตอบกลับไปตามกฎที่กำหนดไว้
-
-อ้างอิงจากสไลด์การเรียน หน้า 80–82 (Simple Application: ELIZA / How ELIZA works)
+โปรแกรมจำลอง ELIZA แชทบอทที่เลียนแบบนักจิตบำบัดแนว Rogerian
+(แนวคิดต้นฉบับโดย Joseph Weizenbaum, 1966) โดยใช้ **regular expression
+(regex)** จับรูปแบบประโยคที่ผู้ใช้พิมพ์เข้ามา แล้วสร้างคำตอบกลับไปตาม
+กฎที่กำหนดไว้ ทำให้พูดคุยโต้ตอบไปเรื่อยๆ ได้เหมือนแชทบอทจริง
 
 ## วิธีการทำงาน
 
-โปรแกรมจะรับข้อความจากผู้ใช้ทีละบรรทัด แล้ววนตรวจสอบ regex pattern ทีละกฎ
-ตามลำดับในลิสต์ `RULES` เมื่อเจอ pattern แรกที่ match จะหยุดค้นหาทันที
-และสร้างคำตอบจากเทมเพลตของกฎนั้น
+โปรแกรมรับข้อความจากผู้ใช้ทีละบรรทัด แล้ววนตรวจสอบ regex pattern ทีละ
+กฎตามลำดับในลิสต์ `RULES` เมื่อเจอ pattern แรกที่ match จะหยุดค้นหา
+ทันที และสุ่มเลือกคำตอบหนึ่งข้อความจากชุดคำตอบที่กำหนดไว้ให้กับกฎนั้น
 
-ถ้าประโยคมีการจับกลุ่มคำ (capture group) เช่น `my (.+)` โปรแกรมจะทำ
-**reflection** คือสลับสรรพนามบุรุษที่ 1 กับบุรุษที่ 2 ก่อนนำไปแทนใน
-คำตอบ เช่น
+ถ้าประโยคมีการจับกลุ่มคำ (capture group) เช่น `my (.+)` หรือ `i feel (.+)`
+โปรแกรมจะทำ **reflection** คือสลับสรรพนามบุรุษที่ 1 กับบุรุษที่ 2 ก่อน
+นำไปแทนในคำตอบ เช่น
 
 ```
-my boyfriend made me come here
-        |              |
-       my -> your      me -> you
-        v
-your boyfriend made you come here
+my mother never understood me
+   |                       |
+  my -> your             me -> you
 ```
 
-ถ้าไม่มีกฎใด match เลย โปรแกรมจะสุ่มตอบด้วยประโยคทั่วไป (default response)
-เช่น "PLEASE TELL ME MORE." เพื่อให้บทสนทนาดำเนินต่อไปได้เรื่อยๆ
+ถ้าไม่มีกฎใด match เลย โปรแกรมจะสุ่มตอบด้วยประโยคทั่วไป (default
+response) เช่น "Please tell me more." เพื่อให้บทสนทนาดำเนินต่อไปได้
+เรื่อยๆ โดยไม่ค้าง
 
-### ตารางกฎ (บางส่วน)
+### หมวดกฎที่มีอยู่ (บางส่วน)
 
-| Pattern (regex)              | ตัวอย่างคำตอบ                                  |
-|-------------------------------|------------------------------------------------|
-| `i'm (depressed\|sad)`        | I AM SORRY TO HEAR YOU ARE ...                 |
-| `i am (depressed\|sad)`       | WHY DO YOU THINK YOU ARE ...                   |
-| `i need (.+)`                 | WHAT WOULD IT MEAN TO YOU IF YOU GOT ...?      |
-| `all`                          | IN WHAT WAY?                                   |
-| `always`                       | CAN YOU THINK OF A SPECIFIC EXAMPLE?           |
-| `my (.+)`                      | YOUR ... (พร้อมสลับสรรพนาม)                     |
-| `i (.+)`                       | DO YOU REALLY THINK SO? / WHY DO YOU SAY ...   |
-| จบด้วย `?`                    | WHY DO YOU ASK THAT? ฯลฯ                       |
-| ไม่ตรงกฎใดเลย                 | สุ่มตอบทั่วไป เช่น PLEASE TELL ME MORE.        |
+| ตัวกระตุ้น (keyword / pattern)      | แนวคำตอบ                                       |
+|--------------------------------------|--------------------------------------------------|
+| hello / hi / hey                     | ทักทายกลับ                                       |
+| computer(s)                          | ถามความรู้สึกเกี่ยวกับคอมพิวเตอร์                 |
+| sorry                                 | บอกว่าไม่ต้องขอโทษ                                |
+| i remember X / do you remember X     | ถามย้อนเกี่ยวกับความทรงจำนั้น                     |
+| i dream about X                      | ถามเกี่ยวกับความฝัน                              |
+| mother/father/sister/brother/family  | ชวนคุยเรื่องครอบครัว                             |
+| i'm / i am depressed, sad, unhappy   | แสดงความเห็นใจ หรือถามว่าเป็นแบบนี้นานแค่ไหน       |
+| i feel X                              | ถามว่ารู้สึกแบบนี้บ่อยแค่ไหน / อะไรทำให้รู้สึกแบบนี้ |
+| i can't X                             | ถามว่ารู้ได้อย่างไรว่าทำไม่ได้                    |
+| i need X                              | ถามว่าถ้าได้ X มาจะรู้สึกอย่างไร                  |
+| because X                             | ถามว่าเป็นเหตุผลจริงหรือไม่                       |
+| are you X                             | สะท้อนคำถามกลับ                                  |
+| friend                                | ชวนคุยเรื่องเพื่อน                               |
+| yes / no                              | ตอบสนองสั้นๆ ตามน้ำเสียง                         |
+| all / always                          | ถามหาตัวอย่างที่เจาะจง                           |
+| my X                                  | สะท้อนกลับเป็น "your X" พร้อมถามต่อ                |
+| i X (ทั่วไป)                          | สะท้อนกลับเป็นคำถาม                              |
+| ประโยคคำถาม (what/how/why/ลงท้าย ?)  | ถามกลับ หรือให้คิดเอง                            |
+| ไม่ตรงกฎใดเลย                        | สุ่มตอบทั่วไป เช่น "Please tell me more."         |
 
 พิมพ์ `bye`, `quit` หรือ `exit` เพื่อจบการสนทนา
 
 ## ความต้องการของระบบ (Requirements)
 
 - Python 3.x (ทดสอบกับ Python 3.10+)
-- ไม่ต้องติดตั้งไลบรารีเพิ่มเติม (ใช้แค่ `re` และ `random` ที่มากับ Python
-  อยู่แล้ว)
+- ไม่ต้องติดตั้งไลบรารีเพิ่มเติม (ใช้แค่ `re` และ `random` ที่มากับ
+  Python อยู่แล้ว)
 
 ## วิธีรัน
 
@@ -62,23 +70,22 @@ your boyfriend made you come here
    (บน Windows อาจใช้ `python eliza.py` แทน)
 
 4. พิมพ์ประโยคคุยกับ ELIZA แล้วกด Enter โปรแกรมจะตอบกลับทุกครั้ง
-5. พิมพ์ `bye` เพื่อออกจากโปรแกรม
+5. พิมพ์ `bye`, `quit` หรือ `exit` เพื่อออกจากโปรแกรม
 
 ## ตัวอย่างการรัน
 
 ```
 $ python3 eliza.py
-HELLO, I AM ELIZA. HOW ARE YOU FEELING TODAY?
-> Men are all alike.
-IN WHAT WAY?
-> They're always bugging us about something or other.
-CAN YOU THINK OF A SPECIFIC EXAMPLE?
-> Well, my boyfriend made me come here.
-YOUR BOYFRIEND MADE YOU COME HERE
-> He says I'm depressed much of the time.
-I AM SORRY TO HEAR YOU ARE DEPRESSED
+Hello, I am ELIZA. How are you feeling today?
+> My mother never understood me.
+Tell me more about your family.
+> I feel anxious about my exam.
+What makes you feel anxious about your exam?
+> Because I did not study enough.
+Does that reason satisfy you?
 > bye
-GOODBYE. TAKE CARE OF YOURSELF.
+Goodbye. Take care of yourself.
 ```
 
-ผลลัพธ์ตรงกับตัวอย่างบทสนทนาในสไลด์หน้า 81 ทุกบรรทัด
+คำตอบแต่ละครั้งอาจไม่เหมือนเดิมทุกครั้ง เพราะโปรแกรมสุ่มเลือกจาก
+ชุดคำตอบที่เป็นไปได้หลายแบบในแต่ละกฎ
